@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תורת המשחקים: איך לקבל החלטות בעולם שבו כולם מנסים לנצח | גיא קובלרצ'יק ושקד ניניו</title>
+    
+    <!-- Google Fonts: Heebo & Assistant for Academic & Executive Hebrew Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&family=Heebo:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Luminous Modern Light Theme Palette */
+            --bg-page: #F8FAFC;
+            --bg-stage: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-card-subtle: #F1F5F9;
+            --bg-card-hover: #F8FAFC;
+            
+            --border-subtle: #E2E8F0;
+            --border-hover: #93C5FD;
+            --border-focus: #3B82F6;
+            
+            /* Dynamic Accents */
+            --accent-cobalt: #1D4ED8;
+            --accent-blue: #2563EB;
+            --accent-blue-light: #EFF6FF;
+            --accent-emerald: #059669;
+            --accent-emerald-light: #ECFDF5;
+            --accent-coral: #E11D48;
+            --accent-coral-light: #FFF1F2;
+            --accent-amber: #D97706;
+            --accent-amber-light: #FFFBEB;
+            --accent-purple: #7C3AED;
+            --accent-purple-light: #FAF5FF;
+            
+            /* High Contrast Typography for Light Mode */
+            --text-title: #0F172A;
+            --text-body: #334155;
+            --text-muted: #64748B;
+            --text-light: #94A3B8;
+
+            --shadow-stage: 0 20px 45px -10px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05);
+            --shadow-card: 0 4px 16px -2px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.03);
+            --shadow-card-hover: 0 12px 28px -4px rgba(37, 99, 235, 0.12), 0 2px 6px rgba(15, 23, 42, 0.04);
+            
+            --radius-xl: 20px;
+            --radius-lg: 14px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Heebo', 'Assistant', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-body);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+            background-image: 
+                radial-gradient(circle at 10% 12%, rgba(37, 99, 235, 0.04) 0%, transparent 45%),
+                radial-gradient(circle at 90% 88%, rgba(5, 150, 105, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(225, 29, 72, 0.02) 0%, transparent 60%);
+            background-attachment: fixed;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+            direction: rtl;
+            text-align: right;
+        }
+
+        /* Top Progress Bar */
+        .progress-bar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #E2E8F0;
+            z-index: 100;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 9.09%;
+            background: linear-gradient(90deg, var(--accent-emerald), var(--accent-blue), var(--accent-cobalt));
+            transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Clean Top Navigation Bar */
+        .top-nav {
+            position: fixed;
+            top: 4px;
+            left: 0;
+            right: 0;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.5rem;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-subtle);
+            z-index: 90;
+            direction: rtl;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-blue-light), #DBEAFE);
+            border: 1px solid #BFDBFE;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-blue);
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-title);
+            letter-spacing: -0.2px;
+        }
+
+        .brand-sub {
+            font-size: 0.78rem;
+            color: var(--accent-cobalt);
+            font-weight: 600;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.45rem 0.9rem;
+            background: #FFFFFF;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-body);
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-action:hover {
+            background: var(--bg-card-subtle);
+            border-color: var(--border-hover);
+            color: var(--accent-blue);
+        }
+
+        /* Presentation Workspace */
+        .presentation-container {
+            flex: 1;
+            margin-top: 68px;
+            margin-bottom: 74px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .slide-stage {
+            width: 100%;
+            max-width: 1260px;
+            min-height: 630px;
+            height: calc(100vh - 170px);
+            max-height: 760px;
+            background: var(--bg-stage);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-stage);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Individual Slides (Zero Metadata / Labels) */
+        .slide {
+            position: absolute;
+            inset: 0;
+            padding: 2.75rem 3.5rem;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px) scale(0.99);
+            transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s;
+            overflow-y: auto;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+            z-index: 2;
+        }
+
+        /* Slide Header (Pure Title & Subtitle Only) */
+        .slide-header {
+            margin-bottom: 1.75rem;
+            flex-shrink: 0;
+            text-align: right;
+        }
+
+        .slide-title {
+            font-size: 2.25rem;
+            font-weight: 900;
+            color: var(--text-title);
+            line-height: 1.22;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.45rem;
+        }
+
+        .slide-subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            line-height: 1.55;
+        }
+
+        /* Slide Body Content */
+        .slide-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Grid Utilities */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.75rem;
+            align-items: stretch;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            align-items: stretch;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            align-items: stretch;
+        }
+
+        /* Bright Card Styles: Crisp, Clean, Modern */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.6rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: right;
+            box-shadow: var(--shadow-card);
+            transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-card-hover);
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            border: 1px solid #BFDBFE;
+            flex-shrink: 0;
+            align-self: flex-start;
+        }
+
+        .card-icon.emerald {
+            background: var(--accent-emerald-light);
+            color: var(--accent-emerald);
+            border-color: #A7F3D0;
+        }
+
+        .card-icon.coral {
+            background: var(--accent-coral-light);
+            color: var(--accent-coral);
+            border-color: #FECDD3;
+        }
+
+        .card-icon.amber {
+            background: var(--accent-amber-light);
+            color: var(--accent-amber);
+            border-color: #FDE68A;
+        }
+
+        .card-icon.purple {
+            background: var(--accent-purple-light);
+            color: var(--accent-purple);
+            border-color: #DDD6FE;
+        }
+
+        .card-category-tag {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 0.35rem;
+            text-align: right;
+            width: 100%;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-title);
+            margin-bottom: 0.6rem;
+            line-height: 1.35;
+            text-align: right;
+            width: 100%;
+        }
+
+        .card-text {
+            font-size: 0.95rem;
+            color: var(--text-body);
+            line-height: 1.6;
+            text-align: right;
+            width: 100%;
+        }
+
+        .card-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            margin-top: 0.75rem;
+            width: 100%;
+            text-align: right;
+        }
+
+        .card-list li {
+            position: relative;
+            padding-right: 1.3rem;
+            font-size: 0.92rem;
+            color: var(--text-body);
+            line-height: 1.5;
+            text-align: right;
+        }
+
+        .card-list li::before {
+            content: "•";
+            position: absolute;
+            right: 0;
+            color: var(--accent-blue);
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        /* Clean Highlight Banners (No Clutter) */
+        .highlight-box {
+            background: var(--accent-blue-light);
+            border: 1px solid #BFDBFE;
+            border-right: 4px solid var(--accent-blue);
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.75rem;
+            margin-bottom: 1.5rem;
+            text-align: right;
+        }
+
+        .highlight-box.emerald {
+            background: var(--accent-emerald-light);
+            border: 1px solid #A7F3D0;
+            border-right: 4px solid var(--accent-emerald);
+        }
+
+        .highlight-box.coral {
+            background: var(--accent-coral-light);
+            border: 1px solid #FECDD3;
+            border-right: 4px solid var(--accent-coral);
+        }
+
+        .highlight-box.amber {
+            background: var(--accent-amber-light);
+            border: 1px solid #FDE68A;
+            border-right: 4px solid var(--accent-amber);
+        }
+
+        .highlight-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-title);
+            margin-bottom: 0.4rem;
+        }
+
+        .highlight-desc {
+            font-size: 0.96rem;
+            color: var(--text-body);
+            line-height: 1.65;
+        }
+
+        /* Slide 1: Bright Hero Layout */
+        .slide-title-hero {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 3rem;
+            align-items: center;
+            height: 100%;
+            direction: rtl;
+        }
+
+        .hero-headline {
+            font-size: 3.25rem;
+            font-weight: 900;
+            color: var(--text-title);
+            line-height: 1.18;
+            letter-spacing: -1.2px;
+            margin-bottom: 1.25rem;
+        }
+
+        .hero-headline span {
+            color: var(--accent-blue);
+        }
+
+        .presenters-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.6rem 1.35rem;
+            background: #EFF6FF;
+            border: 1.5px solid #BFDBFE;
+            border-radius: 999px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent-cobalt);
+            margin-bottom: 1.75rem;
+        }
+
+        .hero-subhead {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            line-height: 1.65;
+            margin-bottom: 2rem;
+        }
+
+        .hero-graphic-stage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .strategic-visual-box {
+            width: 370px;
+            height: 370px;
+            border-radius: 28px;
+            background: linear-gradient(145deg, #FFFFFF, #F1F5F9);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .decision-matrix-visual {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            padding: 24px;
+            gap: 8px;
+            position: relative;
+        }
+
+        .matrix-node-cell {
+            border-radius: 8px;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        .matrix-node-cell.blue {
+            background: #EFF6FF;
+            border-color: #93C5FD;
+            color: var(--accent-blue);
+        }
+
+        .matrix-node-cell.emerald {
+            background: #ECFDF5;
+            border-color: #A7F3D0;
+            color: var(--accent-emerald);
+        }
+
+        .matrix-node-cell.coral {
+            background: #FFF1F2;
+            border-color: #FECDD3;
+            color: var(--accent-coral);
+        }
+
+        .chess-overlay-icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.85) 30%, transparent 80%);
+        }
+
+        .floating-knight {
+            width: 105px;
+            height: 105px;
+            filter: drop-shadow(0 10px 15px rgba(37, 99, 235, 0.2));
+        }
+
+        /* Slide 4: Clean 2x2 Matrix on Light Background */
+        .pd-matrix-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            align-items: center;
+            width: 100%;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 12px;
+            table-layout: fixed;
+            direction: rtl;
+        }
+
+        .matrix-table th, .matrix-table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .matrix-corner-header {
+            padding: 0.75rem 1rem;
+            background: #F1F5F9;
+            border: 1px dashed var(--border-subtle);
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .matrix-col-header {
+            padding: 0.8rem 1rem;
+            background: #F8FAFC;
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--accent-blue);
+        }
+
+        .matrix-row-header {
+            padding: 0.8rem 1rem;
+            background: #F8FAFC;
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--accent-purple);
+        }
+
+        .matrix-cell {
+            background: #FFFFFF;
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.4rem;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            transition: all 0.22s ease;
+        }
+
+        .matrix-cell:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+        }
+
+        .matrix-cell.pareto-cell {
+            border: 2px solid var(--accent-emerald);
+            background: #F0FDF4;
+        }
+
+        .matrix-cell.nash-cell {
+            border: 2px solid var(--accent-coral);
+            background: #FFF1F2;
+        }
+
+        .score-pill-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 0.55rem;
+            flex-wrap: wrap;
+        }
+
+        .score-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.35rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.86rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .score-pill.p1 {
+            background: #FAF5FF;
+            border: 1px solid #DDD6FE;
+            color: var(--accent-purple);
+        }
+
+        .score-pill.p2 {
+            background: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            color: var(--accent-blue);
+        }
+
+        .cell-verdict {
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
+
+        .matrix-legend {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-indicator {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        /* Slide 6: Kuhn Poker Cards (Queen, King, Ace / מלכה, מלך, אס) */
+        .kuhn-cards-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .playing-card {
+            width: 110px;
+            height: 160px;
+            border-radius: 12px;
+            background: #FFFFFF;
+            border: 2px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px 12px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+            position: relative;
+            transition: all 0.25s ease;
+        }
+
+        .playing-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(15, 23, 42, 0.12);
+        }
+
+        .playing-card.queen {
+            border-color: #E11D48;
+        }
+
+        .playing-card.king {
+            border-color: #D97706;
+        }
+
+        .playing-card.ace {
+            border-color: #2563EB;
+        }
+
+        .card-corner {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .card-center-symbol {
+            font-size: 2.4rem;
+            align-self: center;
+            line-height: 1;
+        }
+
+        .card-rank-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 3px 6px;
+            border-radius: 4px;
+            background: #F1F5F9;
+        }
+
+        /* Slide 7: Nobel Laureates */
+        .laureate-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: right;
+            box-shadow: var(--shadow-card);
+            transition: all 0.25s ease;
+        }
+
+        .laureate-card:hover {
+            border-color: #FCD34D;
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(217, 119, 6, 0.1);
+        }
+
+        .laureate-header {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+            width: 100%;
+        }
+
+        .laureate-avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--accent-amber-light);
+            border: 2px solid var(--accent-amber);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-amber);
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .laureate-meta h3 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-title);
+            margin-bottom: 0.25rem;
+        }
+
+        .laureate-award-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-amber);
+            background: #FFFBEB;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            border: 1px solid #FDE68A;
+        }
+
+        .laureate-quote {
+            font-style: italic;
+            font-size: 1rem;
+            color: var(--text-title);
+            line-height: 1.6;
+            padding: 1rem 1.25rem;
+            background: #F8FAFC;
+            border-right: 3px solid var(--accent-amber);
+            border-radius: var(--radius-sm);
+            margin-bottom: 1.25rem;
+            width: 100%;
+            text-align: right;
+        }
+
+        /* Slide 11: Final Closing Layout */
+        .closing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            padding: 2rem;
+        }
+
+        .closing-headline {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--text-title);
+            margin-bottom: 1.25rem;
+            letter-spacing: -1px;
+        }
+
+        .closing-headline span {
+            color: var(--accent-blue);
+        }
+
+        .closing-presenters-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 2.25rem;
+            background: #EFF6FF;
+            border: 1.5px solid #BFDBFE;
+            border-radius: 999px;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--accent-cobalt);
+            margin-bottom: 2.25rem;
+        }
+
+        .closing-questions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            width: 100%;
+            margin-bottom: 2rem;
+            text-align: right;
+        }
+
+        /* Bottom Controls Footer */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.5rem;
+            z-index: 90;
+            direction: rtl;
+        }
+
+        .indicators-track {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slide-dot {
+            width: 24px;
+            height: 6px;
+            border-radius: 999px;
+            background: #CBD5E1;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .slide-dot:hover {
+            background: #94A3B8;
+        }
+
+        .slide-dot.active {
+            width: 44px;
+            background: var(--accent-blue);
+        }
+
+        .nav-buttons-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.6rem 1.4rem;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn-prev {
+            background: #FFFFFF;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-body);
+        }
+
+        .nav-btn-prev:hover:not(:disabled) {
+            background: #F1F5F9;
+            color: var(--text-title);
+        }
+
+        .nav-btn-next {
+            background: var(--accent-blue);
+            border: 1px solid var(--accent-cobalt);
+            color: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .nav-btn-next:hover:not(:disabled) {
+            background: var(--accent-cobalt);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .keyboard-hint {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .kbd-key {
+            display: inline-block;
+            padding: 0.15rem 0.45rem;
+            background: #F1F5F9;
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.74rem;
+            color: var(--text-title);
+        }
+
+        /* SVG Icons Inline Styles */
+        .svg-icon {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3 { grid-template-columns: 1fr; }
+            .slide-title-hero { grid-template-columns: 1fr; gap: 1.5rem; }
+            .hero-graphic-stage { display: none; }
+            .hero-headline { font-size: 2.3rem; }
+            .slide-stage { height: auto; min-height: 700px; }
+            .closing-questions-grid { grid-template-columns: 1fr; }
+        }
+
+        /* High-Quality Print Stylesheet (Ctrl+P to PDF) */
+        @media print {
+            body {
+                background: #FFFFFF !important;
+                color: #0F172A !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .top-nav, .bottom-nav, .progress-bar-container {
+                display: none !important;
+            }
+
+            .presentation-container {
+                margin: 0 !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+
+            .slide-stage {
+                max-width: 100% !important;
+                height: auto !important;
+                min-height: auto !important;
+                border: none !important;
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+
+            .slide {
+                position: relative !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: none !important;
+                display: flex !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+                min-height: 100vh !important;
+                padding: 3rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Progress Tracker -->
+    <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+
+    <!-- Top Header Bar (Clean, Light & Modern) -->
+    <header class="top-nav">
+        <div class="brand-section">
+            <div class="brand-icon">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m4.93 4.93 4.24 4.24"></path>
+                    <path d="m14.83 9.17 4.24-4.24"></path>
+                    <path d="m14.83 14.83 4.24 4.24"></path>
+                    <path d="m9.17 14.83-4.24 4.24"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <span class="brand-title">תורת המשחקים: איך לקבל החלטות</span>
+                <span class="brand-sub">מציגים: גיא קובלרצ'יק ושקד ניניו</span>
+            </div>
+        </div>
+
+        <div class="nav-actions">
+            <button class="btn-action" id="btnFullscreen" title="מסך מלא (F)">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+                    <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
+                    <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
+                    <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+                </svg>
+                <span>מסך מלא (F)</span>
+            </button>
+
+            <button class="btn-action" id="btnPrint" title="הדפסה / שמירה כ-PDF (Ctrl+P)">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect width="12" height="8" x="6" y="14"></rect>
+                </svg>
+                <span>ייצוא ל-PDF</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Slide Presentation Workspace -->
+    <main class="presentation-container">
+        <div class="slide-stage" id="slideStage">
+
+            <!-- SLIDE 1: שקף פתיחה (CUSTOM TITLE SLIDE) -->
+            <div class="slide active" data-slide="1">
+                <div class="slide-title-hero">
+                    <div>
+                        <h1 class="hero-headline">
+                            תורת המשחקים: <span>איך לקבל החלטות</span> בעולם שבו כולם מנסים לנצח
+                        </h1>
+
+                        <div class="presenters-badge">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            <span>מציגים: גיא קובלרצ'יק ושקד ניניו</span>
+                        </div>
+
+                        <p class="hero-subhead">
+                            המדריך האינטואיטיבי לחשיבה אסטרטגית: איך להבין את האינטרסים של השחקנים מולך, לצפות את המהלכים שלהם, ולבחור בנתיב המנצח.
+                        </p>
+                    </div>
+
+                    <div class="hero-graphic-stage">
+                        <div class="strategic-visual-box">
+                            <div class="decision-matrix-visual">
+                                <div class="matrix-node-cell blue">1,1</div>
+                                <div class="matrix-node-cell">1,2</div>
+                                <div class="matrix-node-cell emerald">Waze</div>
+                                <div class="matrix-node-cell">1,4</div>
+                                <div class="matrix-node-cell">2,1</div>
+                                <div class="matrix-node-cell blue">Nash</div>
+                                <div class="matrix-node-cell coral">Risk</div>
+                                <div class="matrix-node-cell">2,4</div>
+                                <div class="matrix-node-cell emerald">Win</div>
+                                <div class="matrix-node-cell">3,2</div>
+                                <div class="matrix-node-cell blue">Kuhn</div>
+                                <div class="matrix-node-cell">3,4</div>
+                                <div class="matrix-node-cell">4,1</div>
+                                <div class="matrix-node-cell coral">Bluff</div>
+                                <div class="matrix-node-cell">4,3</div>
+                                <div class="matrix-node-cell emerald">Deal</div>
+                            </div>
+                            <div class="chess-overlay-icon">
+                                <svg class="floating-knight" viewBox="0 0 64 64" fill="none" stroke="currentColor">
+                                    <path d="M18 52h28c0-3-2-6-5-7-2-1-3-3-3-6 0-3 2-6 3-8 1-2 2-5 1-8-1-2-2-4-4-5-2-1-4-1-6-1-1-2-3-4-5-5-3-2-7-2-10-1-1 1-2 2-2 3-2 2-3 5-3 8 0 3 1 6 3 8 1 2 1 4 0 6-1 2-3 4-5 6-2 1-3 3-3 5 0 2 1 4 3 5 2 1 5 1 8 1z" fill="#EFF6FF" stroke="#2563EB" stroke-width="2.5" stroke-linejoin="round"/>
+                                    <circle cx="27" cy="22" r="2.5" fill="#D97706"/>
+                                    <path d="M22 28c3 2 7 2 10-1" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+                                    <rect x="14" y="52" width="36" height="5" rx="2.5" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: מהי תורת המשחקים? (WHAT IS GAME THEORY?) -->
+            <div class="slide" data-slide="2">
+                <div class="slide-header">
+                    <h2 class="slide-title">מהי בעצם תורת המשחקים?</h2>
+                    <p class="slide-subtitle">המתמטיקה של אינטראקציות חברתיות וקבלת החלטות אסטרטגיות</p>
+                </div>
+
+                <div class="slide-body">
+                    <div class="highlight-box">
+                        <div class="highlight-title">התובנה המרכזית:</div>
+                        <div class="highlight-desc">
+                            התוצאה שלי לא תלויה רק בבחירות שלי, אלא גם בבחירות של האחרים. בניגוד להחלטה עצמאית מול הטבע, החלטה אסטרטגית מתקבלת מול שחקן חושב שמגיב לצעדים שלי ומנסה לקדם את מטרותיו.
+                        </div>
+                    </div>
+
+                    <div class="grid-4">
+                        <div class="card">
+                            <div class="card-icon emerald">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            </div>
+                            <h3 class="card-title">תחרות עסקית</h3>
+                            <p class="card-text">קביעת מחירי מוצרים מול מתחרים, השקת מבצעים, מיזוגים, ורכישת חברות בשוק תחרותי.</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-icon amber">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                            </div>
+                            <h3 class="card-title">עומסי תנועה</h3>
+                            <p class="card-text">איך הניסיון של כל נהג לבחור בנתיב המהיר ביותר יוצר בסוף פקק תנועה כבד לכולם.</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-icon">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                            </div>
+                            <h3 class="card-title">יחסים בינלאומיים</h3>
+                            <p class="card-text">מאזן אימה, בריתות ביטחוניות, מרוצי חימוש ומשאים ומתנים על הסכמי שלום וסחר גלובלי.</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-icon coral">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                            </div>
+                            <h3 class="card-title">דייטינג</h3>
+                            <p class="card-text">איתותים אמינים (Signaling), סינון שותפים פוטנציאליים, דילמות אמון וחשיפת כוונות הדדית.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: היסטוריה על קצה המזלג (HISTORY & ORIGINS) -->
+            <div class="slide" data-slide="3">
+                <div class="slide-header">
+                    <h2 class="slide-title">היסטוריה על קצה המזלג</h2>
+                    <p class="slide-subtitle">מתחום מתמטי מופשט לכלי מרכזי בכלכלה, ניהול, פסיכולוגיה ובינה מלאכותית</p>
+                </div>
+
+                <div class="slide-body">
+                    <div class="grid-3">
+                        <div class="card">
+                            <div class="card-icon">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path><path d="M6 6h10"></path><path d="M6 10h10"></path></svg>
+                            </div>
+                            <div class="card-category-tag">1944 • יסודות התחום</div>
+                            <h3 class="card-title">פון נוימן ומורגנשטרן</h3>
+                            <p class="card-text">
+                                ג'ון פון נוימן ואוסקר מורגנשטרן מניחים את יסודות התחום בספרם המהפכני:
+                                <br><strong style="color:var(--text-title);">"Theory of Games and Economic Behavior"</strong>.
+                            </p>
+                            <ul class="card-list">
+                                <li>הגדרה אקסיומטית ראשונה של תורת התועלת.</li>
+                                <li>ניתוח מתמטי מלא של משחקי סכום אפס.</li>
+                            </ul>
+                        </div>
+
+                        <div class="card" style="border-color:#BFDBFE; background:#F8FAFC;">
+                            <div class="card-icon purple">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            </div>
+                            <div class="card-category-tag" style="color:var(--accent-purple);">שנות ה-50 • מהפכת שיווי המשקל</div>
+                            <h3 class="card-title">ג'ון נאש ונקודת האיזון</h3>
+                            <p class="card-text">
+                                ג'ון נאש מציג את תפיסת שיווי המשקל ומחולל מהפכה בתחום עבור משחקים שאינם סכום אפס.
+                            </p>
+                            <ul class="card-list">
+                                <li>הוכחה שלכל משחק סופי קיים שיווי משקל יציב.</li>
+                                <li>מצב שבו לאף שחקן לא כדאי לשנות את בחירתו לבד.</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-icon emerald">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                            </div>
+                            <div class="card-category-tag" style="color:var(--accent-emerald);">שנות ה-70 ועד ימינו • אבולוציה</div>
+                            <h3 class="card-title">התרחבות רב-תחומית</h3>
+                            <p class="card-text">
+                                המעבר ממתמטיקה טהורה לכלי הכרחי בעיצוב מערכות אנושיות וטכנולוגיות:
+                            </p>
+                            <ul class="card-list">
+                                <li><strong>כלכלה וניהול:</strong> מודלים של תחרות ומשא ומתן.</li>
+                                <li><strong>פסיכולוגיה:</strong> הבנת הטיות קוגניטיביות ואמון.</li>
+                                <li><strong>בינה מלאכותית:</strong> ניתוב רשתות ומערכות אוטונומיות.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: דילמת האסיר - הבעיה (THE PRISONER'S DILEMMA: THE PROBLEM) -->
+            <div class="slide" data-slide="4">
+                <div class="slide-header">
+                    <h2 class="slide-title">דילמת האסיר: הבעיה והתרחיש</h2>
+                    <p class="slide-subtitle">שני חשודים נחקרים בנפרד ללא יכולת לתקשר — מה הבחירה הנכונה?</p>
+                </div>
+
+                <div class="slide-body">
+                    <div class="grid-2">
+                        <div style="display:flex; flex-direction:column; gap:1.25rem; justify-content:center;">
+                            <div class="card" style="margin-bottom:0; width:100%;">
+                                <h3 class="card-title" style="color:var(--accent-blue);">תרחיש החקירה:</h3>
+                                <p class="card-text">
+                                    שני חשודים מוחזקים בתאים נפרדים ללא שום יכולת תיאום. בפני כל אחד מהם עומדות שתי אפשרויות:
+                                </p>
+                                <ul class="card-list" style="margin-top:0.75rem;">
+                                    <li><strong style="color:var(--text-title);">לשתוק:</strong> שמירה על שיתוף פעולה ונאמנות לשותף.</li>
+                                    <li><strong style="color:var(--accent-coral);">להלשין:</strong> בגידה והודאה לצורך קבלת הקלה אישית.</li>
+                                </ul>
+                            </div>
+
+                            <div class="highlight-box emerald" style="margin-bottom:0; width:100%;">
+                                <div class="highlight-title">מקרא שנות מאסר במטריצה:</div>
+                                <div class="highlight-desc">
+                                    התג הסגול מייצג את <strong>חשוד א'</strong>, והתג הכחול מייצג את <strong>חשוד ב'</strong>. ככל שמספר השנים קטן יותר — התוצאה טובה יותר.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pd-matrix-wrapper">
+                            <table class="matrix-table">
+                                <thead>
+                                    <tr>
+                                        <th class="matrix-corner-header" style="width:25%;">חשוד א' \ ב'</th>
+                                        <th class="matrix-col-header">חשוד ב': שותק</th>
+                                        <th class="matrix-col-header">חשוד ב': מלשין</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th class="matrix-row-header">חשוד א': שותק</th>
+                                        <td class="matrix-cell pareto-cell">
+                                            <div class="score-pill-row">
+                                                <span class="score-pill p1">חשוד א': 1 שנה</span>
+                                                <span class="score-pill p2">חשוד ב': 1 שנה</span>
+                                            </div>
+                                            <div class="cell-verdict" style="color:var(--accent-emerald);">
+                                                שיתוף פעולה הדדי
+                                                <br><strong>(התוצאה הקולקטיבית המיטבית)</strong>
+                                            </div>
+                                        </td>
+                                        <td class="matrix-cell">
+                                            <div class="score-pill-row">
+                                                <span class="score-pill p1" style="color:var(--accent-coral);">חשוד א': 5 שנים</span>
+                                                <span class="score-pill p2" style="color:var(--accent-emerald);">חשוד ב': חופשי!</span>
+                                            </div>
+                                            <div class="cell-verdict">
+                                                חשוד א' שתק ונענש;
+                                                <br>חשוד ב' הלשין ושוחרר
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="matrix-row-header">חשוד א': מלשין</th>
+                                        <td class="matrix-cell">
+                                            <div class="score-pill-row">
+                                                <span class="score-pill p1" style="color:var(--accent-emerald);">חשוד א': חופשי!</span>
+                                                <span class="score-pill p2" style="color:var(--accent-coral);">חשוד ב': 5 שנים</span>
+                                            </div>
+                                            <div class="cell-verdict">
+                                                חשוד א' הלשין ושוחרר;
+                                                <br>חשוד ב' שתק ונענש
+                                            </div>
+                                        </td>
+                                        <td class="matrix-cell nash-cell">
+                                            <div class="score-pill-row">
+                                                <span class="score-pill p1" style="color:var(--accent-coral);">חשוד א': 3 שנים</span>
+                                                <span class="score-pill p2" style="color:var(--accent-coral);">חשוד ב': 3 שנים</span>
+                                            </div>
+                                            <div class="cell-verdict" style="color:var(--accent-coral);">
+                                                שיווי משקל נאש!
+                                                <br><strong>(בגידה הדדית — כולם מפסידים)</strong>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="matrix-legend">
+                                <div class="legend-item">
+                                    <div class="legend-indicator" style="background:var(--accent-emerald);"></div>
+                                    <span>שיתוף פעולה אופטימלי (שנה אחת)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-indicator" style="background:var(--accent-coral);"></div>
+                                    <span>שיווי משקל נאש הבלתי נמנע (3 שנים)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 5: דילמת האסיר - תובנות (REAL-WORLD LESSONS) -->
+            <div class="slide" data-slide="5">
+                <div class="slide-header">
+                    <h2 class="slide-title">דילמת האסיר: תובנות והפרדוקס</h2>
+                    <p class="slide-subtitle">מדוע רציונליות אישית מובילה לתוצאה קולקטיבית גרועה יותר?</p>
+                </div>
+
+                <div class="slide-body">
+                    <div class="highlight-box coral">
+                        <div class="highlight-title">הפרדוקס המרכזי:</div>
+                        <div class="highlight-desc">
+                            האינטרס האישי הצר של כל צד מוביל בהכרח לתוצאה קולקטיבית גרועה יותר. אם השותף שותק — כדאי לי להלשין ולהשתחרר מיד. אם השותף מלשין — חובה עליי להלשין כדי לא לקבל 5 שנים. לכן, שני הצדדים מלשינים ומקבלים 3 שנים במקום שנה אחת בלבד.
+                        </div>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="card">
+                            <div class="card-icon coral">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg>
+                            </div>
+                            <div class="card-category-tag" style="color:var(--accent-coral);">ביטחון בינלאומי</div>
+                            <h3 class="card-title">מרוץ חימוש צבאי</h3>
+                            <p class="card-text">
+                                שתי מעצמות משקיעות מיליארדים בהתחמשות הדדית מתוך פחד. שתיהן נשארות באותו מאזן כוחות בדיוק, אך עם גירעון ענק וסיכון מוגבר למלחמה.
+                            </p>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-icon amber">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            </div>
+                            <div class="card-category-tag" style="color:var(--accent-amber);">קמעונאות ומסחר</div>
+                            <h3 class="card-title">מלחמת מחירים</h3>
+                            <p class="card-text">
+                                רשתות שיווק מורידות מחירים בצורה אגרסיבית כדי לא לאבד לקוחות. נתח השוק נותר ללא שינוי, אך שולי הרווח של כל השחקנים נשחקים לאפס.
+                            </p>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-icon emerald">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+                            </div>
+                            <div class="card-category-tag" style="color:var(--accent-emerald);">סביבה וקיימות</div>
+                            <h3 class="card-title">הסכמי אקלים בינלאומיים</h3>
+                            <p class="card-text">
+                                לכל מדינה כדאי להמשיך לזהם כדי להשיג צמיחה תעשייתית זולה. התוצאה הגלובלית: כדור הארץ מתחמם וכל המדינות משלמות מחיר כבד.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 6: משחק דוגמה - פוקר קון (KUHN POKER - QUEEN, KING, ACE) -->
+            <div class="slide" data-slide="6">
+                <div class="slide-header">
+                    <h2 class="slide-title">משחק דוגמה: פוקר קון (Kuhn Poker)</h2>
+                    <p class="slide-subtitle">מודל פוקר מופשט עם 3 קלפים בלבד (מלכה, מלך, אס) לחקר קבלת החלטות בחוסר מידע</p>
+                </div>
+
+                <div class="slide-body">
+                    <!-- Cards Visual: Queen (Q), King (K), Ace (A) -->
+                    <div class="kuhn-cards-container">
+                        <div class="playing-card queen">
+                            <div class="card-corner" style="color:var(--accent-coral);">Q ♥</div>
+                            <div class="card-center-symbol" style="color:var(--accent-coral);">♥</div>
+                            <div class="card-rank-tag">מלכה (נמוך)</div>
+                        </div>
+
+                        <div class="playing-card king">
+                            <div class="card-corner" style="color:var(--accent-amber);">K ♦</div>
+                            <div class="card-center-symbol" style="color:var(--accent-amber);">♦</div>
+                            <div class="card-rank-tag">מלך (בינוני)</div>
+                        </div>
+
+                        <div class="playing-card ace">
+                            <div class="card-corner" style="color:var(--accent-blue);">A ♠</div>
+                            <div class="card-center-symbol" style="color:var(--accent-blue);">♠</div>
+                            <div class="card-rank-tag">אס (גבוה מנצח)</div>
+                        </div>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="card">
+                            <div class="card-icon">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle></svg>
+                            </div>
+                            <div class="card-category-tag">מבנה המשחק</div>
+                            <h3 class="card-title">חוקים בסיסיים</h3>
+                            <p class="card-text">
+                                חפיסה זעירה של 3 קלפים בלבד (מלכה, מלך, אס), שני שחקנים וקופה מרכזית. כל שחקן מקבל קלף סודי אחד ושם מטבע בקופה.
+                            </p>
+                            <ul class="card-list">
+                                <li>מהלכים בסיסיים: הימור (Bet) או בדיקה (Check).</li>
+                                <li>אתגר הליבה: קבלת החלטה בתנאי מידע חלקי.</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-icon coral">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            </div>
+                            <div class="card-category-tag" style="color:var(--accent-coral);">התובנה האסטרטגית</div>
+                            <h3 class="card-title">בלוף כמהלך הכרחי</h3>
+                            <p class="card-text">
+                                אם יש לך <strong>מלכה (הקלף הנמוך ביותר)</strong> ולעולם לא תהמר, היריב ידע בדיוק מתי לפעול וינצח אותך תמיד.
+                            </p>
+                            <ul class="card-list">
+                                <li>חובה לבלף ולהמר בחלק מהזמן עם מלכה.</li>
+                                <li>הבלוף מגן על השחקן ומאלץ את היריב לטעות עם מלך.</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-icon emerald">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+                            </div>
+                            <div class="card-category-tag" style="color:var(--accent-emerald);">הוכחה מתמטית</div>
+                            <h3 class="card-title">חוסר צפיות מחושב</h3>
+                            <p class="card-text">
+                                המודל הוכיח מתמטית שכאשר יש חוסר במידע — פעולה קבועה וצפויה היא מתכון ודאי להפסד מתמשך.
+                            </p>
+                            <ul class="card-list">
+                                <li>שילוב הסתברותי מחושב בין הימור לבדיקה.</li>
+                                <li>בלוף איננו רמאות — הוא כלי הישרדות אסטרטגי.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 7: גאווה ישראלית: חתני פרס נובל (ISRAELI NOBEL LAUREATES) -->
+            <div class="slide" data-slide="7">
+                <div class="slide-header">
+                    <h2 class="slide-title">גאווה ישראלית: חתני פרס נובל</h2>
+                    <p class="slide-subtitle">ישראל כמוקד עולמי מוביל בחקר החלטות אסטרטגיות ופסיכולוגיה כלכלית</p>
+                </div>
+
+                <div class="slide-body">
+                    <div class="grid-2">
+                        <div class="laureate-card">
+                            <div class="laureate-header">
+                                <div class="laureate-avatar">
+                                    <svg class="svg-icon" style="width:36px; height:36px;" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                                </div>
+                                <div class="laureate-meta">
+                                    <h3>פרופ' ישראל אומן</h3>
+                                    <div class="laureate-award-pill">פרס נובל לכלכלה לשנת 2005 • האוניברסיטה העברית</div>
+                                </div>
+                            </div>
+
+                            <div class="laureate-quote">
+                                "איך נוצר אמון לטווח ארוך? באמצעות 'צל העתיד'. כששחקנים יודעים שהאינטראקציה ביניהם תימשך שוב ושוב — שיתוף פעולה הופך למשתלם וכדאי."
+                            </div>
+
+                            <div class="card-category-tag" style="color:var(--accent-amber);">תרומת המפתח:</div>
+                            <p class="card-text">
+                                הבנת עימותים ושיתופי פעולה דרך <strong>משחקים חוזרים (Repeated Games)</strong>. הוכחה כיצד אינטראקציה מתמשכת בונה אמון ומייצרת פתרונות שלום ללא כפייה חיצונית.
+                            </p>
+                        </div>
+
+                        <div class="laureate-card">
+                            <div class="laureate-header">
+                                <div class="laureate-avatar">
+                                    <svg class="svg-icon" style="width:36px; height:36px;" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                                </div>
+                                <div class="laureate-meta">
+                                    <h3>פרופ' דניאל כהנמן</h3>
+                                    <div class="laureate-award-pill">פרס נובל לכלכלה לשנת 2002 • האוניברסיטה העברית</div>
+                                </div>
+                            </div>
+
+                            <div class="laureate-quote">
+                                "בני אדם מקבלים החלטות בפועל מתוך פחד מהפסד והטיות מחשבתיות, ולא לפי מודלים מתמטיים קרים על הנייר."
+                            </div>
+
+                            <div class="card-category-tag" style="color:var(--accent-amber);">תרומת המפתח:</div>
+                            <p class="card-text">
+                                מייסד <strong>הכלכלה ההתנהגותית (Behavioral Economics)</strong>. שילב פסיכולוגיה אנושית, שנאת הפסד (Loss Aversion) ורציונליות מוגבלת בתוך תורת ההחלטות.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 8: סוגי משחקים מרכזיים (MAIN TYPES OF GAMES) -->
+            <div class="slide" data-slide="8">
+                <div class="slide-header">
+                    <h2 class="slide-title">סוגי משחקים מרכזיים</h2>
+                    <p class="slide-subtitle">מיפוי השדה האסטרטגי: איך לאבחן נכון את חוקי המשחק</p>
+                </div>
+
+                <div class="slide-body">
+                    <div class="grid-3">
+                        <div class="card">
+                            <div class="card-icon coral">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path></svg>
+                            </div>
+                            <div class="card-category-tag" style="color:var(--accent-coral);">עוגה קבועה • תחרות מוחלטת</div>
+                            <h3 class="card-title">משחק סכום אפס</h3>
+                            <p class="card-text">
+                                הניצחון של צד אחד הוא בדיוק ההפסד של הצד השני (סכום התוצאות שווה תמיד אפס).
+                            </p>
+                            <ul class="card-list">
+                                <li><strong>דוגמאות:</strong> שחמט, פוקר, חלוקת תקציב קשיח.</li>
+                                <li><strong>מאפיין:</strong> תחרות מוחלטת ללא אפשרות לרווח משותף.</li>
+                            </ul>
+                        </div>
+
+                        <div class="card" style="border-color:#A7F3D0; background:#F0FDF4;">
+                            <div class="card-icon emerald">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            </div>
+                            <div class="card-category-tag" style="color:var(--accent-emerald);">עוגה גמישה • Win-Win / Lose-Lose</div>
+                            <h3 class="card-title">משחק סכום שאינו אפס</h3>
+                            <p class="card-text">
+                                מצב שבו שני הצדדים יכולים להרוויח יחד משיתוף פעולה, או להפסיד יחד ממאבק.
+                            </p>
+                            <ul class="card-list">
+                                <li><strong>דוגמאות:</strong> מסחר בינלאומי, שותפויות עסקיות.</li>
+                                <li><strong>מאפיין:</strong> פוטנציאל לסינרגיה וצמיחה הדדית.</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-icon purple">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+                            </div>
+                            <div class="card-category-tag" style="color:var(--accent-purple);">מימד הזמן וההמשכיות</div>
+                            <h3 class="card-title">חד-פעמי מול משחק חוזר</h3>
+                            <p class="card-text">
+                                זיכרון והמשכיות משנים לחלוטין את התנהגות השחקנים ואת רמת האמון.
+                            </p>
+                            <ul class="card-list">
+                                <li><strong>חד-פעמי:</strong> תמריץ מוגבר לבגידה ולניצול מהיר.</li>
+                                <li><strong>משחק חוזר:</strong> מוניטין ואמינות הופכים לנכס המשתלם ביותר.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 9: שימושים בעולם האמיתי (REAL-WORLD APPLICATIONS) -->
+            <div class="slide" data-slide="9">
+                <div class="slide-header">
+                    <h2 class="slide-title">שימושים בעולם האמיתי</h2>
+                    <p class="slide-subtitle">כיצד תיאוריה אסטרטגית מניעה שווקים, טכנולוגיה והחלטות יומיומיות</p>
+                </div>
+
+                <div class="slide-body">
+                    <div class="grid-3">
+                        <div class="card">
+                            <div class="card-icon">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                            </div>
+                            <div class="card-category-tag">עסקים ומשא ומתן</div>
+                            <h3 class="card-title">תמחור אסטרטגי ומכרזים</h3>
+                            <p class="card-text">
+                                ניתוח חלופות חיצוניות והבנת כוח המיקוח — הגדרת ה-<strong>BATNA</strong> של כל צד.
+                            </p>
+                            <ul class="card-list">
+                                <li>תכנון מכרזים חכמים למכירת תדרי סלולר ונדל"ן.</li>
+                                <li>מניעת "קללת המנצח" בעסקאות מיזוגים ורכישות.</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-icon emerald">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            </div>
+                            <div class="card-category-tag" style="color:var(--accent-emerald);">טכנולוגיה ו-AI</div>
+                            <h3 class="card-title">פתרון עומסים חכם</h3>
+                            <p class="card-text">
+                                מערכות ניווט (כמו <strong>Waze</strong>) מייצרות שיווי משקל רשתי עבור כלל הנהגים.
+                            </p>
+                            <ul class="card-list">
+                                <li>פיזור עומסים חכם למניעת צווארי בקבוק.</li>
+                                <li>מערכות בינה מלאכותית מרובות סוכנים במסחר ורובוטיקה.</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-icon amber">
+                                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="card-category-tag" style="color:var(--accent-amber);">חיי היומיום</div>
+                            <h3 class="card-title">ניהול קונפליקטים אישיים</h3>
+                            <p class="card-text">
+                                קבלת החלטות חכמה יותר בשיחות שכר, הסכמי שכירות ופתרון מחלוקות.
+                            </p>
+                            <ul class="card-list">
+                                <li>הבנת התמריצים הסמויים של הצד השני.</li>
+                                <li>בניית הסכמים ברי-קיימא המבוססים על אינטרס משותף.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 10: לקחי מפתח (KEY TAKEAWAYS) -->
+            <div class="slide" data-slide="10">
+                <div class="slide-header">
+                    <h2 class="slide-title">לקחי מפתח: 3 מסרים קצרים לחיים</h2>
+                    <p class="slide-subtitle">עקרונות חשיבה אסטרטגיים לקבלת החלטות מדויקת בכל תחום</p>
+                </div>
+
+                <div class="slide-body">
+                    <div class="grid-3">
+                        <div class="card" style="border-top: 4px solid var(--accent-blue);">
+                            <div class="card-icon">
+                                <span style="font-family:'JetBrains Mono'; font-weight:800; font-size:1.15rem;">01</span>
+                            </div>
+                            <h3 class="card-title">צפו תמיד את תגובת הצד השני</h3>
+                            <p class="card-text">
+                                תמיד תחשוב איך הצד השני יגיב לפני שאתה עושה את הצעד שלך. היכנס לנעלי השחקן שמולך והבן את מערכת התמריצים המניעה אותו.
+                            </p>
+                        </div>
+
+                        <div class="card" style="border-top: 4px solid var(--accent-coral);">
+                            <div class="card-icon coral">
+                                <span style="font-family:'JetBrains Mono'; font-weight:800; font-size:1.15rem;">02</span>
+                            </div>
+                            <h3 class="card-title">בלוף וחוסר צפיות כרציונליות</h3>
+                            <p class="card-text">
+                                כפי שראינו בפוקר קון: כשיש חוסר במידע, פעולה קבועה וצפויה מזמינה ניצול. בלוף מחושב וחוסר צפיות הם לעיתים הצעד הציני אך הרציונלי ביותר.
+                            </p>
+                        </div>
+
+                        <div class="card" style="border-top: 4px solid var(--accent-emerald);">
+                            <div class="card-icon emerald">
+                                <span style="font-family:'JetBrains Mono'; font-weight:800; font-size:1.15rem;">03</span>
+                            </div>
+                            <h3 class="card-title">השקיעו במשחק הארוך</h3>
+                            <p class="card-text">
+                                מערכות יחסים לטווח ארוך הופכות תחרות הרסנית לשיתוף פעולה. אמון הדדי ומוניטין של אמינות מנצחים תמיד רווחים רגעיים מבגידה.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 11: סיכום ושאלות (CLOSING & DISCUSSION) -->
+            <div class="slide" data-slide="11">
+                <div class="closing-container">
+                    <h2 class="closing-headline">
+                        תודה רבה! <span>שאלות ודיון חופשי</span>
+                    </h2>
+
+                    <div class="closing-presenters-card">
+                        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>מציגים: גיא קובלרצ'יק ושקד ניניו</span>
+                    </div>
+
+                    <div class="closing-questions-grid">
+                        <div class="card">
+                            <h3 class="card-title" style="color:var(--accent-blue);">דילמת האסיר בחייכם</h3>
+                            <p class="card-text">
+                                היכן בחיים האישיים או המקצועיים יצא לכם להרגיש שאינטרס אישי צר הוביל לתוצאה קולקטיבית פחות טובה?
+                            </p>
+                        </div>
+
+                        <div class="card">
+                            <h3 class="card-title" style="color:var(--accent-coral);">בלוף ומידע חלקי</h3>
+                            <p class="card-text">
+                                מתי בפעם האחרונה השתמשתם בחוסר צפיות או בערפול כוונות כדי להגן על עמדת המיקוח שלכם?
+                            </p>
+                        </div>
+
+                        <div class="card">
+                            <h3 class="card-title" style="color:var(--accent-emerald);">בניית שיתוף פעולה</h3>
+                            <p class="card-text">
+                                כיצד תוכלו להפוך אינטראקציה חד-פעמית ומתוחה למשחק חוזר שבו שני הצדדים מרוויחים?
+                            </p>
+                        </div>
+                    </div>
+
+                    <button class="nav-btn nav-btn-next" onclick="goToSlide(0)">
+                        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+                        <span>חזרה לשקף הפתיחה</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bottom Controls & Navigation -->
+    <footer class="bottom-nav">
+        <!-- Slide Indicators (11 Dots) -->
+        <div class="indicators-track" id="indicatorsTrack">
+            <!-- Rendered by JS -->
+        </div>
+
+        <!-- Keyboard Shortcuts Hint -->
+        <div class="keyboard-hint">
+            <span>ניווט: <span class="kbd-key">←</span> <span class="kbd-key">→</span> או <span class="kbd-key">Space</span></span>
+            <span>|</span>
+            <span>מסך מלא: <span class="kbd-key">F</span></span>
+        </div>
+
+        <!-- Nav Buttons (RTL Order) -->
+        <div class="nav-buttons-group">
+            <button class="nav-btn nav-btn-next" id="btnNext">
+                <span>הבא</span>
+                <svg class="svg-icon" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
+            <button class="nav-btn nav-btn-prev" id="btnPrev">
+                <svg class="svg-icon" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                <span>הקודם</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- Clean Engine Script -->
+    <script>
+        (function() {
+            const slides = Array.from(document.querySelectorAll('.slide'));
+            const totalSlides = slides.length;
+            let currentSlide = 0;
+
+            // DOM Elements
+            const progressBar = document.getElementById('progressBar');
+            const btnPrev = document.getElementById('btnPrev');
+            const btnNext = document.getElementById('btnNext');
+            const indicatorsTrack = document.getElementById('indicatorsTrack');
+            const btnFullscreen = document.getElementById('btnFullscreen');
+            const btnPrint = document.getElementById('btnPrint');
+
+            // Initialize Indicators (11 Clean Dots)
+            function buildIndicators() {
+                indicatorsTrack.innerHTML = '';
+                for (let i = 0; i < totalSlides; i++) {
+                    const dot = document.createElement('button');
+                    dot.className = `slide-dot ${i === 0 ? 'active' : ''}`;
+                    dot.setAttribute('aria-label', `שקף ${i + 1}`);
+                    dot.addEventListener('click', () => goToSlide(i));
+                    indicatorsTrack.appendChild(dot);
+                }
+            }
+
+            // Update UI State
+            function updateUI() {
+                slides.forEach((slide, idx) => {
+                    slide.classList.toggle('active', idx === currentSlide);
+                });
+
+                // Update Progress Fill
+                const progressPct = ((currentSlide + 1) / totalSlides) * 100;
+                progressBar.style.width = `${progressPct}%`;
+
+                // Update Dots
+                const dots = indicatorsTrack.querySelectorAll('.slide-dot');
+                dots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === currentSlide);
+                });
+
+                // Update Nav Buttons
+                btnPrev.disabled = currentSlide === 0;
+                btnNext.disabled = currentSlide === totalSlides - 1;
+            }
+
+            // Navigation Helpers
+            function goToSlide(index) {
+                if (index < 0 || index >= totalSlides) return;
+                currentSlide = index;
+                updateUI();
+            }
+
+            function nextSlide() {
+                if (currentSlide < totalSlides - 1) {
+                    goToSlide(currentSlide + 1);
+                }
+            }
+
+            function prevSlide() {
+                if (currentSlide > 0) {
+                    goToSlide(currentSlide - 1);
+                }
+            }
+
+            // Event Listeners for Nav Buttons
+            btnNext.addEventListener('click', nextSlide);
+            btnPrev.addEventListener('click', prevSlide);
+
+            // Fullscreen Toggle
+            btnFullscreen.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                } else {
+                    document.exitFullscreen().catch(() => {});
+                }
+            });
+
+            // Print / Export to PDF
+            btnPrint.addEventListener('click', () => {
+                window.print();
+            });
+
+            // Global Keyboard Navigation (Strict RTL Support)
+            window.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+                switch (e.key) {
+                    case 'ArrowLeft':
+                        // In RTL presentation, Left moves forward
+                        nextSlide();
+                        break;
+                    case 'ArrowRight':
+                        // In RTL presentation, Right moves backwards
+                        prevSlide();
+                        break;
+                    case ' ':
+                    case 'PageDown':
+                        e.preventDefault();
+                        nextSlide();
+                        break;
+                    case 'PageUp':
+                        e.preventDefault();
+                        prevSlide();
+                        break;
+                    case 'Home':
+                        e.preventDefault();
+                        goToSlide(0);
+                        break;
+                    case 'End':
+                        e.preventDefault();
+                        goToSlide(totalSlides - 1);
+                        break;
+                    case 'f':
+                    case 'F':
+                    case 'כ': // Hebrew keyboard 'F'
+                        if (!document.fullscreenElement) {
+                            document.documentElement.requestFullscreen().catch(() => {});
+                        } else {
+                            document.exitFullscreen().catch(() => {});
+                        }
+                        break;
+                }
+            });
+
+            // Touch Swipe for Mobile / Tablets
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            document.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            document.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                const diff = touchEndX - touchStartX;
+                if (Math.abs(diff) > 40) {
+                    if (diff < 0) {
+                        nextSlide(); // Swiped left -> Forward
+                    } else {
+                        prevSlide(); // Swiped right -> Back
+                    }
+                }
+            }, { passive: true });
+
+            // Initialize Everything
+            buildIndicators();
+            updateUI();
+
+            // Expose globally for interactive buttons
+            window.goToSlide = goToSlide;
+        })();
+    </script>
+</body>
+</html>
