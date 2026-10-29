@@ -198,8 +198,7 @@ with st.sidebar:
     st.markdown("<h2 style='text-align: right; margin-bottom: 10px;'>⚙️ הגדרות שולחן</h2>", unsafe_allow_html=True)
 
     # מצב לימוד
-    peek_mode = st.toggle("👁️ מצב לימוד (חשוף קלף בוט)", value=False)
-
+    peek_mode = st.sidebar.toggle("👁️ מצב לימוד (חשוף קלף בוט)", value=False)
     # כרטיסיית עמדה נוכחית
     st.markdown("---")
     pos_num = st.session_state.current_human_position
