@@ -571,6 +571,72 @@
             filter: drop-shadow(0 10px 15px rgba(37, 99, 235, 0.2));
         }
 
+        /* Slide 4: Embedded Video Showcase */
+        .video-showcase-card {
+            background: #FFFFFF;
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.2rem;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            transition: all 0.25s ease;
+        }
+
+        .video-showcase-card:hover {
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+            border-color: #BFDBFE;
+        }
+
+        .video-player-frame {
+            position: relative;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #0B0F19;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .video-player-frame video {
+            width: 100%;
+            max-height: 380px;
+            display: block;
+            outline: none;
+            background: #000;
+        }
+
+        .video-caption-bar {
+            margin-top: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 0.25rem;
+        }
+
+        .video-caption-text {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-title);
+        }
+
+        .video-badge {
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.2rem 0.65rem;
+            border-radius: 20px;
+            border: 1px solid #BFDBFE;
+        }
+
         /* Slide 4: Clean 2x2 Matrix on Light Background */
         .pd-matrix-wrapper {
             display: flex;
@@ -1298,90 +1364,35 @@
                             <div class="card" style="margin-bottom:0; width:100%;">
                                 <h3 class="card-title" style="color:var(--accent-blue);">תרחיש החקירה:</h3>
                                 <p class="card-text">
-                                    שני חשודים מוחזקים בתאים נפרדים ללא שום יכולת תיאום. בפני כל אחד מהם עומדות שתי אפשרויות:
+                                    שני חשודים מוחזקים בתאים נפרדים ללא שום יכולת תיאום ביניהם. בפני כל אחד מהם עומדות שתי אפשרויות הכרעה:
                                 </p>
                                 <ul class="card-list" style="margin-top:0.75rem;">
-                                    <li><strong style="color:var(--text-title);">לשתוק:</strong> שמירה על שיתוף פעולה ונאמנות לשותף.</li>
-                                    <li><strong style="color:var(--accent-coral);">להלשין:</strong> בגידה והודאה לצורך קבלת הקלה אישית.</li>
+                                    <li><strong style="color:var(--text-title);">לשתוק (שיתוף פעולה):</strong> נאמנות לשותף. אם שניהם שותקים — כל אחד מקבל שנה אחת בלבד.</li>
+                                    <li><strong style="color:var(--accent-coral);">להלשין (בגידה):</strong> ניסיון הצלה אישית. המלשין משתחרר מיד, בעוד שותפו ששתק מקבל 5 שנות מאסר.</li>
                                 </ul>
                             </div>
 
-                            <div class="highlight-box emerald" style="margin-bottom:0; width:100%;">
-                                <div class="highlight-title">מקרא שנות מאסר במטריצה:</div>
+                            <div class="highlight-box amber" style="margin-bottom:0; width:100%;">
+                                <div class="highlight-title">צפו בסרטון ההסבר:</div>
                                 <div class="highlight-desc">
-                                    התג הסגול מייצג את <strong>חשוד א'</strong>, והתג הכחול מייצג את <strong>חשוד ב'</strong>. ככל שמספר השנים קטן יותר — התוצאה טובה יותר.
+                                    הסרטון ממחיש בצורה חזותית ומרתקת את מערך התמריצים, הלחץ הפסיכולוגי בחדר החקירות, ומדוע האינטרס האישי דוחף את שניהם לתוצאה הקשה ביותר — שלוש שנות מאסר לכל אחד.
                                 </div>
                             </div>
                         </div>
 
-                        <div class="pd-matrix-wrapper">
-                            <table class="matrix-table">
-                                <thead>
-                                    <tr>
-                                        <th class="matrix-corner-header" style="width:25%;">חשוד א' \ ב'</th>
-                                        <th class="matrix-col-header">חשוד ב': שותק</th>
-                                        <th class="matrix-col-header">חשוד ב': מלשין</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th class="matrix-row-header">חשוד א': שותק</th>
-                                        <td class="matrix-cell pareto-cell">
-                                            <div class="score-pill-row">
-                                                <span class="score-pill p1">חשוד א': 1 שנה</span>
-                                                <span class="score-pill p2">חשוד ב': 1 שנה</span>
-                                            </div>
-                                            <div class="cell-verdict" style="color:var(--accent-emerald);">
-                                                שיתוף פעולה הדדי
-                                                <br><strong>(התוצאה הקולקטיבית המיטבית)</strong>
-                                            </div>
-                                        </td>
-                                        <td class="matrix-cell">
-                                            <div class="score-pill-row">
-                                                <span class="score-pill p1" style="color:var(--accent-coral);">חשוד א': 5 שנים</span>
-                                                <span class="score-pill p2" style="color:var(--accent-emerald);">חשוד ב': חופשי!</span>
-                                            </div>
-                                            <div class="cell-verdict">
-                                                חשוד א' שתק ונענש;
-                                                <br>חשוד ב' הלשין ושוחרר
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th class="matrix-row-header">חשוד א': מלשין</th>
-                                        <td class="matrix-cell">
-                                            <div class="score-pill-row">
-                                                <span class="score-pill p1" style="color:var(--accent-emerald);">חשוד א': חופשי!</span>
-                                                <span class="score-pill p2" style="color:var(--accent-coral);">חשוד ב': 5 שנים</span>
-                                            </div>
-                                            <div class="cell-verdict">
-                                                חשוד א' הלשין ושוחרר;
-                                                <br>חשוד ב' שתק ונענש
-                                            </div>
-                                        </td>
-                                        <td class="matrix-cell nash-cell">
-                                            <div class="score-pill-row">
-                                                <span class="score-pill p1" style="color:var(--accent-coral);">חשוד א': 3 שנים</span>
-                                                <span class="score-pill p2" style="color:var(--accent-coral);">חשוד ב': 3 שנים</span>
-                                            </div>
-                                            <div class="cell-verdict" style="color:var(--accent-coral);">
-                                                שיווי משקל נאש!
-                                                <br><strong>(בגידה הדדית — כולם מפסידים)</strong>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <div class="matrix-legend">
-                                <div class="legend-item">
-                                    <div class="legend-indicator" style="background:var(--accent-emerald);"></div>
-                                    <span>שיתוף פעולה אופטימלי (שנה אחת)</span>
+                        <div class="video-showcase-card">
+                            <div class="video-player-frame">
+                                <video controls playsinline preload="metadata" id="prisonersDilemmaVideo">
+                                    <source src="prisoners_dilemma.mp4" type="video/mp4">
+                                    הדפדפן שלך אינו תומך בניגון וידאו בפורמט זה.
+                                </video>
+                            </div>
+                            <div class="video-caption-bar">
+                                <div class="video-caption-text">
+                                    <svg class="svg-icon" style="width:18px; height:18px; color:var(--accent-blue);" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"></polygon></svg>
+                                    <span>המחשת דילמת האסיר ומערך התמריצים</span>
                                 </div>
-                                <div class="legend-item">
-                                    <div class="legend-indicator" style="background:var(--accent-coral);"></div>
-                                    <span>שיווי משקל נאש הבלתי נמנע (3 שנים)</span>
-                                </div>
+                                <span class="video-badge">וידאו מומחש</span>
                             </div>
                         </div>
                     </div>
@@ -1830,7 +1841,14 @@
             // Update UI State
             function updateUI() {
                 slides.forEach((slide, idx) => {
-                    slide.classList.toggle('active', idx === currentSlide);
+                    const isActive = (idx === currentSlide);
+                    slide.classList.toggle('active', isActive);
+                    if (!isActive) {
+                        const vids = slide.querySelectorAll('video');
+                        vids.forEach(v => {
+                            if (!v.paused) v.pause();
+                        });
+                    }
                 });
 
                 // Update Progress Fill
