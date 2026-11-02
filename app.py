@@ -9,14 +9,15 @@ st.set_page_config(
 )
 
 # --- עיצוב ממשק, כפתורי קזינו וסרגל צד ב-CSS ---
+# --- עיצוב ממשק, כפתורי קזינו וסרגל צד ב-CSS ---
 st.markdown("""
 <style>
     .stApp {
         direction: rtl;
     }
 
-    /* מירכוז וריווח תיבת הפעולות הראשית - רק במסכים רחבים */
-    section.main div[data-testid="stHorizontalBlock"] {
+    /* מירכוז וריווח תיבת הפעולות הראשית */
+    div[data-testid="stHorizontalBlock"] {
         max-width: 520px !important;
         margin: 5px auto 20px auto !important;
         gap: 20px !important;
@@ -37,38 +38,38 @@ st.markdown("""
     }
 
     /* כפתור ימני (Check / Call / Next Hand) - ירוק זוהר */
-    section.main div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button {
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button {
         background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%) !important;
         box-shadow: 0 6px 0 #1e8449, 0 10px 15px rgba(0,0,0,0.3) !important;
         border-top: 1px solid #a9dfbf !important;
     }
-    section.main div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button:hover {
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button:hover {
         background: linear-gradient(180deg, #34d677 0%, #2ecc71 100%) !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 8px 0 #1e8449, 0 12px 18px rgba(0,0,0,0.35) !important;
     }
-    section.main div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button:active {
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button:active {
         transform: translateY(4px) !important;
         box-shadow: 0 2px 0 #1e8449, 0 4px 6px rgba(0,0,0,0.2) !important;
     }
 
-    /* כפתור שמאלי (Bet / Fold) - כתום-זהב / אדום */
-    section.main div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button {
+    /* כפתור שמאלי (Bet / Fold) - כתום-זהב */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button {
         background: linear-gradient(180deg, #f39c12 0%, #d68910 100%) !important;
         box-shadow: 0 6px 0 #b7790b, 0 10px 15px rgba(0,0,0,0.3) !important;
         border-top: 1px solid #f9e79f !important;
     }
-    section.main div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button:hover {
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button:hover {
         background: linear-gradient(180deg, #f5b041 0%, #f39c12 100%) !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 8px 0 #b7790b, 0 12px 18px rgba(0,0,0,0.35) !important;
     }
-    section.main div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button:active {
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button:active {
         transform: translateY(4px) !important;
         box-shadow: 0 2px 0 #b7790b, 0 4px 6px rgba(0,0,0,0.2) !important;
     }
 
-    /* עיצוב כפתור איפוס משחק בסרגל הצד */
+    /* עיצוב כפתור איפוס בסרגל הצד */
     section[data-testid="stSidebar"] .stButton > button {
         background: linear-gradient(180deg, #c0392b 0%, #962d22 100%) !important;
         box-shadow: 0 4px 0 #78241b, 0 6px 12px rgba(0,0,0,0.2) !important;
@@ -79,79 +80,27 @@ st.markdown("""
         border-radius: 12px !important;
         border: none !important;
     }
-    section[data-testid="stSidebar"] .stButton > button:hover {
-        background: linear-gradient(180deg, #d9534f 0%, #c0392b 100%) !important;
-        box-shadow: 0 5px 0 #78241b, 0 8px 14px rgba(0,0,0,0.3) !important;
-        transform: translateY(-1px) !important;
-    }
-    section[data-testid="stSidebar"] .stButton > button:active {
-        transform: translateY(2px) !important;
-        box-shadow: 0 1px 0 #78241b !important;
-    }
 
-    /* יישור סרגל צד לימין ומניעת שבירת טקסט אנכית */
+    /* יישור סרגל צד */
     section[data-testid="stSidebar"] {
         direction: rtl;
         text-align: right;
     }
-    section[data-testid="stSidebar"] * {
-        white-space: normal !important;
-        word-break: normal !important;
-    }
 
-    /* --- התאמה רספונסיבית לנייד: כיווץ מלא למסך יחיד ללא גלילה --- */
+    /* התאמה למסכי טלפון */
     @media (max-width: 768px) {
-        /* ביטול רווחים עליונים ותחתונים ב-Streamlit */
         .block-container {
-            padding-top: 0.5rem !important;
-            padding-bottom: 0.5rem !important;
-            padding-left: 0.25rem !important;
-            padding-right: 0.25rem !important;
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
         }
-
-        /* הקטנת כותרת האפליקציה הראשית */
-        h1 {
-            font-size: 1.25rem !important;
-            margin: 0 0 4px 0 !important;
-            padding: 0 !important;
-            text-align: center !important;
+        div[data-testid="stHorizontalBlock"] {
+            max-width: 320px !important;
+            gap: 10px !important;
+            margin: 5px auto !important;
         }
-
-        /* כיווץ מידות שולחן הפוקר */
-        .poker-table, div[style*="background: radial-gradient"], div[style*="border-radius: 120px"] {
-            max-width: 310px !important;
-            height: 390px !important;
-            min-height: 390px !important;
-            padding: 8px !important;
-            margin: 0 auto !important;
-            border-radius: 70px !important;
-        }
-
-        /* הקטנת הקלפים */
-        .card, .poker-card, div[style*="border-radius: 12px"][style*="box-shadow"] {
-            width: 65px !important;
-            height: 95px !important;
-            font-size: 1rem !important;
-        }
-
-        /* הקטנת קופת המשחק */
-        div[style*="border: 2px dashed"], .pot-box {
-            padding: 3px 8px !important;
-            font-size: 12px !important;
-            margin: 4px auto !important;
-        }
-
-        /* התאמת גודל כפתורי Check / Bet כך שיכנסו ישירות בתחתית */
-        section.main div[data-testid="stHorizontalBlock"] {
-            max-width: 310px !important;
-            margin: 4px auto !important;
-            gap: 8px !important;
-        }
-
         .stButton > button {
-            height: 42px !important;
-            font-size: 15px !important;
-            border-radius: 20px !important;
+            height: 46px !important;
+            font-size: 16px !important;
         }
     }
 </style>
