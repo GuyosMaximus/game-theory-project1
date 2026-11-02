@@ -195,25 +195,24 @@ if 'score_human' not in st.session_state:
 
 # סרגל צד מעוצב
 with st.sidebar:
-    st.markdown("<h2 style='text-align: right; margin-bottom: 10px;'>⚙️ הגדרות שולחן</h2>", unsafe_allow_html=True)
+    st.header("⚙️ הגדרות שולחן")
 
     # מצב לימוד
-    peek_mode = st.sidebar.toggle("👁️ מצב לימוד (חשוף קלף בוט)", value=False)
-    # כרטיסיית עמדה נוכחית
+    peek_mode = st.toggle("👁️ מצב לימוד (חשוף קלף בוט)", value=False)
+
     st.markdown("---")
     pos_num = st.session_state.current_human_position
     pos_title = "שחקן 1 (מדבר ראשון)" if pos_num == 1 else "שחקן 2 (כפתור / Button)"
     pos_badge_color = "#3498db" if pos_num == 1 else "#e67e22"
 
     st.markdown(f"""
-    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 10px; margin-bottom: 12px; text-align: right;">
         <div style="font-size: 13px; color: #888;">עמדה ביד זו:</div>
         <div style="font-size: 16px; font-weight: bold; color: {pos_badge_color}; margin: 4px 0;">{pos_title}</div>
         <div style="font-size: 12px; color: #777;">מתחלף אוטומטית בכל סיבוב 🔄</div>
     </div>
     """, unsafe_allow_html=True)
 
-    # מאזן תוצאות צבעוני
     st.markdown("---")
     st.markdown("<h4 style='margin-bottom: 8px;'>📊 לוח תוצאות חי</h4>", unsafe_allow_html=True)
 
@@ -223,26 +222,24 @@ with st.sidebar:
     user_delta = f"{user_score:+} ₪" if user_score != 0 else "0 ₪"
     bot_delta = f"{bot_score:+} ₪" if bot_score != 0 else "0 ₪"
 
-    col_sb1, col_sb2 = st.columns(2)
-    with col_sb1:
-        st.metric(
-            label="הרווח שלך",
-            value=f"{user_score:+} ₪",
-            delta=user_delta,
-            delta_color="normal"
-        )
-    with col_sb2:
-        st.metric(
-            label="מאזן בוט (GTO)",
-            value=f"{bot_score:+} ₪",
-            delta=bot_delta,
-            delta_color="inverse"
-        )
+    # הצגה אחד תחת השני ב-Sidebar כדי למנוע דריסת רוחב במסכים ניידים
+    st.metric(
+        label="הרווח שלך",
+        value=f"{user_score:+} ₪",
+        delta=user_delta,
+        delta_color="normal"
+    )
+    st.metric(
+        label="מאזן בוט (GTO)",
+        value=f"{bot_score:+} ₪",
+        delta=bot_delta,
+        delta_color="inverse"
+    )
 
     st.caption(f"🏁 סך ידיים ששוחקו: **{st.session_state.hands_played}**")
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # כפתור איפוס בולט ואדום
+    # כפתור איפוס בולט
     if st.button("🗑️ איפוס משחק מלא", use_container_width=True):
         st.session_state.score_human = 0
         st.session_state.score_bot = 0
