@@ -15,8 +15,8 @@ st.markdown("""
         direction: rtl;
     }
 
-    /* מירכוז וריווח תיבת הפעולות הראשית */
-    div[data-testid="stHorizontalBlock"] {
+    /* מירכוז וריווח תיבת הפעולות הראשית - רק במסכים רחבים */
+    section.main div[data-testid="stHorizontalBlock"] {
         max-width: 520px !important;
         margin: 5px auto 20px auto !important;
         gap: 20px !important;
@@ -37,33 +37,33 @@ st.markdown("""
     }
 
     /* כפתור ימני (Check / Call / Next Hand) - ירוק זוהר */
-    div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button {
+    section.main div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button {
         background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%) !important;
         box-shadow: 0 6px 0 #1e8449, 0 10px 15px rgba(0,0,0,0.3) !important;
         border-top: 1px solid #a9dfbf !important;
     }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button:hover {
+    section.main div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button:hover {
         background: linear-gradient(180deg, #34d677 0%, #2ecc71 100%) !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 8px 0 #1e8449, 0 12px 18px rgba(0,0,0,0.35) !important;
     }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button:active {
+    section.main div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button:active {
         transform: translateY(4px) !important;
         box-shadow: 0 2px 0 #1e8449, 0 4px 6px rgba(0,0,0,0.2) !important;
     }
 
     /* כפתור שמאלי (Bet / Fold) - כתום-זהב / אדום */
-    div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button {
+    section.main div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button {
         background: linear-gradient(180deg, #f39c12 0%, #d68910 100%) !important;
         box-shadow: 0 6px 0 #b7790b, 0 10px 15px rgba(0,0,0,0.3) !important;
         border-top: 1px solid #f9e79f !important;
     }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button:hover {
+    section.main div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button:hover {
         background: linear-gradient(180deg, #f5b041 0%, #f39c12 100%) !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 8px 0 #b7790b, 0 12px 18px rgba(0,0,0,0.35) !important;
     }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button:active {
+    section.main div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button:active {
         transform: translateY(4px) !important;
         box-shadow: 0 2px 0 #b7790b, 0 4px 6px rgba(0,0,0,0.2) !important;
     }
@@ -89,10 +89,70 @@ st.markdown("""
         box-shadow: 0 1px 0 #78241b !important;
     }
 
-    /* יישור סרגל צד לימין */
+    /* יישור סרגל צד לימין ומניעת שבירת טקסט אנכית */
     section[data-testid="stSidebar"] {
         direction: rtl;
         text-align: right;
+    }
+    section[data-testid="stSidebar"] * {
+        white-space: normal !important;
+        word-break: normal !important;
+    }
+
+    /* --- התאמה רספונסיבית לנייד: כיווץ מלא למסך יחיד ללא גלילה --- */
+    @media (max-width: 768px) {
+        /* ביטול רווחים עליונים ותחתונים ב-Streamlit */
+        .block-container {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
+        }
+
+        /* הקטנת כותרת האפליקציה הראשית */
+        h1 {
+            font-size: 1.25rem !important;
+            margin: 0 0 4px 0 !important;
+            padding: 0 !important;
+            text-align: center !important;
+        }
+
+        /* כיווץ מידות שולחן הפוקר */
+        .poker-table, div[style*="background: radial-gradient"], div[style*="border-radius: 120px"] {
+            max-width: 310px !important;
+            height: 390px !important;
+            min-height: 390px !important;
+            padding: 8px !important;
+            margin: 0 auto !important;
+            border-radius: 70px !important;
+        }
+
+        /* הקטנת הקלפים */
+        .card, .poker-card, div[style*="border-radius: 12px"][style*="box-shadow"] {
+            width: 65px !important;
+            height: 95px !important;
+            font-size: 1rem !important;
+        }
+
+        /* הקטנת קופת המשחק */
+        div[style*="border: 2px dashed"], .pot-box {
+            padding: 3px 8px !important;
+            font-size: 12px !important;
+            margin: 4px auto !important;
+        }
+
+        /* התאמת גודל כפתורי Check / Bet כך שיכנסו ישירות בתחתית */
+        section.main div[data-testid="stHorizontalBlock"] {
+            max-width: 310px !important;
+            margin: 4px auto !important;
+            gap: 8px !important;
+        }
+
+        .stButton > button {
+            height: 42px !important;
+            font-size: 15px !important;
+            border-radius: 20px !important;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -195,7 +255,6 @@ if 'score_human' not in st.session_state:
 
 # סרגל צד מעוצב
 with st.sidebar:
-    st.header("⚙️ הגדרות שולחן")
 
     # מצב לימוד
     peek_mode = st.toggle("👁️ מצב לימוד (חשוף קלף בוט)", value=False)
